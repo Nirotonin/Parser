@@ -24,8 +24,3 @@ def get_js_from_page(url, save_path):
             f.write(script_response.text)
 
     print(f"JavaScript файлы сохранены в {save_path}")
-
-# Пример использования, который можно удалить
-# url = "http://example.com"
-# save_path = "/path/to/save"
-# get_js_from_page(url, save_path)
