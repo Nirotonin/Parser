@@ -14,6 +14,28 @@ def save_text_to_file(text, folder_path):
         file.write(text)
     print(f"Текст сохранен в {file_path}")
 
+def remove_extra_spaces(text):
+    lines = text.split('\n')
+    cleaned_lines = []
+    for line in lines:
+        cleaned_line = ' '.join(line.split())  # Remove extra spaces
+        cleaned_lines.append(cleaned_line)
+    return '\n'.join(cleaned_lines)
+
+def remove_extra_paragraphs(text):
+    lines = text.split('\n')
+    cleaned_lines = []
+    consecutive_newlines = 0
+    for line in lines:
+        if line.strip():  # If line is not empty
+            cleaned_lines.append(line)
+            consecutive_newlines = 0
+        else:
+            consecutive_newlines += 1
+            if consecutive_newlines <= 2:
+                cleaned_lines.append(line)
+    return '\n'.join(cleaned_lines)
+
 def main(url, save_directory):
     url = url
     folder_path = save_directory
@@ -23,7 +45,11 @@ def main(url, save_directory):
         return
 
     text = get_text_from_url(url)
-    save_text_to_file(text, folder_path)
+    cleaned_text = remove_extra_paragraphs(text)
+    cleaned_text = remove_extra_spaces(cleaned_text)
+    save_text_to_file(cleaned_text, folder_path)
 
 if __name__ == "__main__":
-    main()
+    url = input("Введите URL: ")
+    save_directory = input("Введите путь для сохранения: ")
+    main(url, save_directory)
