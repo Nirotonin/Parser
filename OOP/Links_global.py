@@ -35,8 +35,3 @@ def extract_links_from_site(url, save_folder):
 
     print(f'Ссылки (глобально) сохранены в {save_path}')
 
-
-# Пример использования
-# url = input('Введите URL сайта: ')
-# save_folder = input('Введите путь к папке для сохранения JS кода: ')
-# extract_links_from_site(url, save_folder)
