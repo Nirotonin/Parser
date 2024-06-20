@@ -63,14 +63,18 @@ def fetch_images_from_url(url, folder_path, visited_urls, error_images, driver):
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
 
+    site_images_folder = os.path.join(folder_path, "images_from_site")
+    if not os.path.exists(site_images_folder):
+        os.makedirs(site_images_folder)
+
     for img_tag in img_tags:
         img_url = img_tag.get('src')
         if img_url:
             if img_url.startswith('data:image'):
-                download_data_uri_image(img_url, folder_path, error_images)
+                download_data_uri_image(img_url, site_images_folder, error_images)
             else:
                 img_url = urljoin(url, img_url)
-                download_image(img_url, folder_path, error_images)
+                download_image(img_url, site_images_folder, error_images)
 
     link_tags = soup.find_all('a', href=True)
     for link_tag in link_tags:
