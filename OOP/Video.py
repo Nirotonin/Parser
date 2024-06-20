@@ -7,6 +7,11 @@ import time
 import os
 
 def download_videos(url, download_folder):
+    # Создаем папку "Видео" в указанной пользователем папке
+    video_folder = os.path.join(download_folder, 'Видео')
+    if not os.path.exists(video_folder):
+        os.makedirs(video_folder)
+
     # Настройка Selenium WebDriver
     options = webdriver.ChromeOptions()
     options.add_argument("--headless")  # Запуск в фоновом режиме
@@ -40,15 +45,11 @@ def download_videos(url, download_folder):
         print("Источники видео не найдены.")
         return
 
-    # Создаем папку для сохранения видео, если ее нет
-    if not os.path.exists(download_folder):
-        os.makedirs(download_folder)
-
     # Скачивание видео
     for i, video_url in enumerate(video_sources):
         try:
             video_content = requests.get(video_url).content
-            video_path = os.path.join(download_folder, f'video_{i}.mp4')
+            video_path = os.path.join(video_folder, f'video_{i}.mp4')
             with open(video_path, 'wb') as video_file:
                 video_file.write(video_content)
             print(f'Video {i} downloaded from {video_url}')
@@ -56,7 +57,3 @@ def download_videos(url, download_folder):
             print(f'Failed to download video {i} from {video_url}: {e}')
 
     print('Успешная загрузка.')
-
-# Пример использования функции
-# download_folder = input("Путь ")  # Укажите путь к папке для сохранения видео
-# download_videos('https://ru.freepik.com/free-video/cute-little-daughter-embracing-her-happy-mother-from-back-park_171476', download_folder)
