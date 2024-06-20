@@ -12,10 +12,16 @@ from PIL import Image
 from io import BytesIO
 import json
 
+def create_folder_if_not_exists(folder_path):
+    images_folder_path = os.path.join(folder_path, "images")
+    if not os.path.exists(images_folder_path):
+        os.makedirs(images_folder_path)
+
 def download_image(url, folder_path, error_images):
     try:
         response = requests.get(url)
         if response.status_code == 200:
+            create_folder_if_not_exists(folder_path)  # Создаем папку, если она не существует
             # Сохраняем изображение с помощью PIL
             img = Image.open(BytesIO(response.content))
             img.save(os.path.join(folder_path, os.path.basename(urlparse(url).path)))
@@ -46,6 +52,7 @@ def download_data_uri_image(data_uri, folder_path, error_images):
         # Декодируем данные изображения из base64
         image_data = base64.b64decode(image_data)
 
+        create_folder_if_not_exists(folder_path)  # Создаем папку, если она не существует
         # Сохраняем изображение в файл с помощью PIL
         img = Image.open(BytesIO(image_data))
         img.save(os.path.join(folder_path, f"image_{len(os.listdir(folder_path))}{extension}"))
@@ -70,11 +77,10 @@ def fetch_images_from_url(url, folder_path):
     # Ищем теги <img> для изображений
     img_tags = soup.find_all('img')
 
-    # Создаем папку, если она не существует
-    if not os.path.exists(folder_path):
-        os.makedirs(folder_path)
-
     error_images = []
+
+    # Проверяем, существует ли папка "изображения"
+    create_folder_if_not_exists(folder_path)
 
     # Скачиваем изображения
     for img_tag in img_tags:
@@ -82,15 +88,15 @@ def fetch_images_from_url(url, folder_path):
         if img_url:
             # Проверяем, является ли изображение URL-адресом или data URI
             if img_url.startswith('data:image'):
-                download_data_uri_image(img_url, folder_path, error_images)
+                download_data_uri_image(img_url, os.path.join(folder_path, "images"), error_images)  # Обновленный путь
             else:
                 # Преобразуем относительный URL в абсолютный
                 img_url = urljoin(url, img_url)
-                download_image(img_url, folder_path, error_images)
+                download_image(img_url, os.path.join(folder_path, "images"), error_images)  # Обновленный путь
 
     driver.quit()
 
     # Сохраняем файл JSON с ошибками загрузки изображений
     if error_images:
-        with open(os.path.join(folder_path, "error_images.json"), "w") as json_file:
+        with open(os.path.join(folder_path, "images", "error_images.json"), "w") as json_file:  # Обновленный путь
             json.dump(error_images, json_file, indent=4)
